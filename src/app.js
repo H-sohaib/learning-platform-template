@@ -1,5 +1,8 @@
 // Question: Comment organiser le point d'entrée de l'application ?
+// Réponse : En regroupant les routes, les middlewares et les configurations dans un seul fichier
 // Question: Quelle est la meilleure façon de gérer le démarrage de l'application ?
+// Réponse : En utilisant des fonctions asynchrones pour initialiser les connexions et les configurations
+
 
 const express = require('express');
 const config = require('./config/env');
