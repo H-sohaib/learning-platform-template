@@ -9,7 +9,7 @@ const config = require('./config/env');
 const db = require('./config/db');
 
 const courseRoutes = require('./routes/courseRoutes');
-const studentRoutes = require('./routes/studentRoutes');
+// const studentRoutes = require('./routes/studentRoutes');
 
 const app = express();
 
