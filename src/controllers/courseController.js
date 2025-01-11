@@ -11,6 +11,7 @@ const redisService = require('../services/redisService');
 async function createCourse(req, res) {
   // TODO: Implémenter la création d'un cours
   // Utiliser les services pour la logique réutilisable
+
 }
 
 async function getCourse(req, res) {
@@ -25,5 +26,5 @@ module.exports = {
   // TODO: Exporter les fonctions du contrôleur
   createCourse,
   getCourse,
-  getCourseStats
+  
 };
