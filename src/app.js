@@ -16,9 +16,15 @@ const app = express();
 async function startServer() {
   try {
     // TODO: Initialiser les connexions aux bases de données
+    await db.connectMongo();
+    await db.connectRedis();
     // TODO: Configurer les middlewares Express
     // TODO: Monter les routes
+    app.use('api/courses', courseRoutes);
     // TODO: Démarrer le serveur
+    app.listen(config.port, () => {
+      console.log(`Server started on port ${config.port}`);
+    });
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);
@@ -28,6 +34,9 @@ async function startServer() {
 // Gestion propre de l'arrêt
 process.on('SIGTERM', async () => {
   // TODO: Implémenter la fermeture propre des connexions
+  await db.close();
+  console.log('Shutting down server');
+  process.exit(0);
 });
 
 startServer();
