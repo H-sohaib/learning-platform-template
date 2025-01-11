@@ -11,11 +11,7 @@ let mongoClient, redisClient, db;
 
 async function connectMongo() {
   try {
-    mongoClient = new MongoClient(config.mongodb.uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000
-    });
+    mongoClient = new MongoClient(config.mongodb.uri);
 
     await mongoClient.connect();
     db = mongoClient.db(config.mongodb.dbName);

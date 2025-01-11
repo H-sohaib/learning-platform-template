@@ -13,7 +13,17 @@ async function createCourse(req, res) {
   // Utiliser les services pour la logique réutilisable
 }
 
+async function getCourse(req, res) {
+}
+
+async function getCourseStats(req, res) {
+}
+
+
 // Export des contrôleurs
 module.exports = {
   // TODO: Exporter les fonctions du contrôleur
+  createCourse,
+  getCourse,
+  getCourseStats
 };
