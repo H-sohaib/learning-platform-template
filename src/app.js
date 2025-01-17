@@ -19,8 +19,9 @@ async function startServer() {
     await db.connectMongo();
     await db.connectRedis();
     // TODO: Configurer les middlewares Express
+    app.use(express.json());
     // TODO: Monter les routes
-    app.use('api/courses', courseRoutes);
+    app.use('/api/courses', courseRoutes);
     // TODO: Démarrer le serveur
     app.listen(config.port, () => {
       console.log(`Server started on port ${config.port}`);
@@ -40,3 +41,5 @@ process.on('SIGTERM', async () => {
 });
 
 startServer();
+
+module.exports = app;
