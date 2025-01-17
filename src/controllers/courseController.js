@@ -56,21 +56,32 @@ async function getCourse(req, res) {
   try {
     // Check if the course is in Redis
     const cachedCourse = await redisClient.get(courseId);
+    console.log("Cached Cource : ", cachedCourse);
+
     if (cachedCourse) {
       return res.status(200).json(JSON.parse(cachedCourse));
     }
+
+    // get the course from MongoDB if not
+    const courseObjectId = new ObjectId(courseId);
+    const course = await db.getDb().collection('courses').findOne({ _id: courseObjectId })
+    console.log("Mongo Course : ", course);
+
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+    await redisClient.set(courseId, JSON.stringify(course));
+    return res.status(200).json(course);
+
   } catch (error) {
-
+    console.error('Error getting course:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
-
-  return res.status(200).json({
-    message: 'Get course'
-  });
 }
 
 async function getCourseStats(req, res) {
+  // TODO: Implement course statistics retrieval
 }
-
 
 // Export des contrôleurs
 module.exports = {
