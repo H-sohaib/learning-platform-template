@@ -65,9 +65,9 @@ async function getCourse(req, res) {
     }
 
     // get the course from MongoDB if not
-    const courseObjectId = new ObjectId(courseId);
-    const course = await db.getDb().collection('courses').findOne({ _id: courseObjectId })
+    const course = await mongoService.findOneById('courses', courseId)
     console.log("Mongo Course : ", course);
+
 
     if (!course) {
       return res.status(404).json({ message: 'Course not found' });
