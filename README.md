@@ -13,6 +13,24 @@ Ensure you have the following installed on your local machine:
 - MongoDB
 - Redis
 
+### Setting Up MongoDB and Redis on Linux
+
+#### MongoDB
+
+```bash
+  sudo apt install mongodb
+  sudo systemctl start mongod
+  sudo systemctl enable mongod #(Optional) Enable MongoDB to start on boot
+```
+
+#### Redis
+
+```bash
+  sudo apt install redis-server
+  sudo systemctl start redis.service
+  sudo systemctl enable redis.service #(Optional) Enable MongoDB to start on boot
+```
+
 ### Installation
 
 1. **Clone the Repository**:
@@ -20,6 +38,9 @@ Ensure you have the following installed on your local machine:
    git clone https://github.com/[your-username]/learning-platform-nosql
    cd learning-platform-nosql
    ```
+
+````
+
 2. **Install Dependencies**:
 
    ```bash
@@ -115,3 +136,4 @@ The project includes tests to ensure that the API responds as expected. The test
 ### POST /api/courses/create (commented out)
 
 - Tests if the endpoint creates a new course and responds with a 201 status code and the newly created course's ID. This test is currently commented out because each time the test runs it create new course but can be enabled as needed.
+````
