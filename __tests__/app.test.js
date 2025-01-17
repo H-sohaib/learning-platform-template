@@ -26,10 +26,20 @@ describe('API Endpoints', () => {
   });
 
   test('GET /api/courses/:id should respond with 404 if course does not exist', async () => {
-    const nonExistingCourseId = 'ffffffffffffffffffffffff';
+    const nonExistingCourseId = 'fffffffffffffffffffffffa';
     const response = await request(app).get(`/api/courses/${nonExistingCourseId}`);
     expect(response.statusCode).toBe(404);
     expect(response.body.message).toBe('Course not found');
+  });
+
+  test('GET /api/courses/stats should respond with 200 and return course statistics', async () => {
+    const response = await request(app).get('/api/courses/stats');
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty('totalCourses');
+    expect(response.body).toHaveProperty('averageDuration');
+    expect(response.body).toHaveProperty('totalRevenue');
+    expect(response.body).toHaveProperty('coursesByInstructor');
+    expect(response.body).toHaveProperty('coursesByTopic');
   });
 
   // test('POST /api/courses should create a new course', async () => {

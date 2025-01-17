@@ -12,8 +12,6 @@ async function createCourse(req, res) {
   // TODO: Implémenter la création d'un cours
   // Utiliser les services pour la logique réutilisable
   try {
-    console.log(req.body);
-
     const { title, description, duration, price, instructor, topics } = req.body;
 
     if (!title || !duration || !price) {
@@ -37,6 +35,9 @@ async function createCourse(req, res) {
     const mongodb = db.getDb();
     const result = await mongodb.collection('courses').insertOne(course);
 
+    // Cache the newly created course in Redis
+    await redisService.cacheData(result.insertedId.toString(), JSON.stringify(course))
+
     res.status(201).json({
       _id: result.insertedId,
       ...course
@@ -51,15 +52,16 @@ async function createCourse(req, res) {
 
 async function getCourse(req, res) {
   const courseId = req.params.id;
-  const redisClient = db.getRedisClient();
+  console.log(`getCourse called with courseId: ${courseId}`);
 
   try {
     // Check if the course is in Redis
-    const cachedCourse = await redisClient.get(courseId);
-    console.log("Cached Cource : ", cachedCourse);
+    const cachedCourse = await redisService.getCachedData(courseId)
+
+    console.log("cached : ", cachedCourse);
 
     if (cachedCourse) {
-      return res.status(200).json(JSON.parse(cachedCourse));
+      return res.status(200).json(cachedCourse);
     }
 
     // get the course from MongoDB if not
@@ -70,7 +72,8 @@ async function getCourse(req, res) {
     if (!course) {
       return res.status(404).json({ message: 'Course not found' });
     }
-    await redisClient.set(courseId, JSON.stringify(course));
+
+    await redisService.cacheData(courseId, JSON.stringify(course))
     return res.status(200).json(course);
 
   } catch (error) {
@@ -81,6 +84,41 @@ async function getCourse(req, res) {
 
 async function getCourseStats(req, res) {
   // TODO: Implement course statistics retrieval
+  try {
+    const mongodb = db.getDb();
+
+    const totalCourses = await mongodb.collection('courses').countDocuments();
+
+    const averageDuration = await mongodb.collection('courses').aggregate([
+      { $group: { _id: null, avgDuration: { $avg: "$duration" } } }
+    ]).toArray();
+
+    const totalRevenue = await mongodb.collection('courses').aggregate([
+      { $group: { _id: null, totalRevenue: { $sum: "$price" } } }
+    ]).toArray();
+
+    // Number of courses by instructor
+    const coursesByInstructor = await mongodb.collection('courses').aggregate([
+      { $group: { _id: "$instructor", count: { $sum: 1 } } }
+    ]).toArray();
+
+    // Number of courses by topic
+    const coursesByTopic = await mongodb.collection('courses').aggregate([
+      { $unwind: "$topics" },
+      { $group: { _id: "$topics", count: { $sum: 1 } } }
+    ]).toArray();
+
+    res.status(200).json({
+      totalCourses,
+      averageDuration: averageDuration[0]?.avgDuration || 0,
+      totalRevenue: totalRevenue[0]?.totalRevenue || 0,
+      coursesByInstructor,
+      coursesByTopic
+    });
+  } catch (error) {
+    console.error('Error getting course statistics:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 }
 
 // Export des contrôleurs
